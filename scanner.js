@@ -32,21 +32,37 @@
     $('send').disabled=!(n && CARRIER.has($('carrier').value));
     $('send').textContent='⇧ ส่งรายการไป KL Tracking ('+n+' บิล)';
   }
+  function cameraMessage(e){
+    const msg=String(e?.message||e||'ไม่ทราบสาเหตุ');
+    if(/permission|denied|notallowed|security|policy/i.test(msg))return 'ไม่ได้รับอนุญาตให้เปิดกล้อง ตรวจสิทธิ์กล้องของเว็บไซต์ในเบราว์เซอร์ แล้วลองใหม่';
+    if(/notfound|device not found|overconstrained/i.test(msg))return 'ไม่พบกล้องบนอุปกรณ์ กรุณาตรวจการเชื่อมต่อและสิทธิ์การใช้งาน';
+    return 'เปิดกล้องไม่ได้: '+msg+' — ยังพิมพ์เลขแทรคแทนได้';
+  }
+  let starting=false;
   async function start(){
-    if(state.active)return;
-    if(!window.isSecureContext){message('ต้องเปิดผ่าน HTTPS (GitHub Pages) เพื่อใช้กล้อง',true);return;}
+    if(state.active||starting)return;
+    if(!window.isSecureContext){message('ต้องเปิดผ่านเว็บไซต์ HTTPS เพื่อใช้กล้อง',true);return;}
+    if(!navigator.mediaDevices?.getUserMedia){message('เว็บเบราว์เซอร์ไม่อนุญาตให้เข้าถึงกล้อง กรุณาเปิดใน Chrome/Safari โดยตรง ไม่ใช่หน้าต่างฝังในแอป',true);return;}
     if(!window.Html5Qrcode){message('โหลดไลบรารีกล้องไม่สำเร็จ กรุณาตรวจอินเทอร์เน็ต หรือพิมพ์เลขแทรคแทน',true);return;}
-    $('cameraArea').hidden=false;
-    const formats = window.Html5QrcodeSupportedFormats;
+    starting=true;$('start').disabled=true;$('cameraArea').hidden=false;
+    const formats=window.Html5QrcodeSupportedFormats;
     try{
-      state.scanner = new Html5Qrcode('reader', {formatsToSupport: [formats.CODE_128,formats.CODE_39,formats.EAN_13,formats.QR_CODE],verbose:false});
-      await state.scanner.start({facingMode:'environment'},{fps:8,qrbox:(w,h)=>({width:Math.min(Math.floor(w*.86),360),height:Math.min(Math.floor(h*.44),170)}),aspectRatio:1.333},decoded=>{
-        const track=normal(decoded),now=Date.now();
-        if(track===state.last && now-state.lastAt<2600)return;
-        state.last=track;state.lastAt=now;add(track);
-      },()=>{});
+      state.scanner=new Html5Qrcode('reader',{formatsToSupport:[formats.CODE_128,formats.CODE_39,formats.EAN_13,formats.QR_CODE],verbose:false});
+      const settings={fps:10,qrbox:(w,h)=>({width:Math.max(100,Math.min(Math.floor(w*.84),360)),height:Math.max(80,Math.min(Math.floor(h*.42),170))})};
+      const onScan=(decoded)=>{const track=normal(decoded),now=Date.now();if(track===state.last&&now-state.lastAt<2600)return;state.last=track;state.lastAt=now;add(track);};
+      try{await state.scanner.start({facingMode:'environment'},settings,onScan,()=>{});}
+      catch(firstError){
+        const cams=await Html5Qrcode.getCameras().catch(()=>[]);
+        if(!cams.length)throw firstError;
+        const camera=cams.find(c=>/back|rear|environment|หลัง/i.test(c.label||''))||cams[cams.length-1];
+        await state.scanner.start(camera.id,settings,onScan,()=>{});
+      }
       state.active=true;$('start').textContent='▣ กล้องกำลังสแกน';message('เปิดกล้องแล้ว เล็งบาร์โค้ดทีละรายการ');
-    }catch(e){state.active=false;$('cameraArea').hidden=true;state.scanner=null;message('เปิดกล้องไม่ได้: '+(e?.message||String(e))+' — กรุณาพิมพ์เลขแทรคแทน',true);}
+    }catch(e){
+      const scanner=state.scanner;state.scanner=null;
+      if(scanner){try{await scanner.stop();}catch(ignore){}try{await scanner.clear();}catch(ignore){}}
+      state.active=false;$('cameraArea').hidden=true;message(cameraMessage(e),true);
+    }finally{starting=false;$('start').disabled=false;}
   }
   async function stop(){
     if(!state.scanner)return;
