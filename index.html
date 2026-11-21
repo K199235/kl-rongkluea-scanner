@@ -1,28 +1,3 @@
 <!doctype html>
-<html lang="th">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#06295a">
-  <title>KL Tracking — กล้องสแกนโรงเกลือ</title>
-  <link rel="stylesheet" href="style.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-  <script defer src="scanner.js"></script>
-</head>
-<body>
-  <header class="top"><div class="brand"><span class="brand-logo">⬡</span><b>KL Tracking</b><span class="brand-tag">โรงเกลือ</span></div><div class="user">📦 กล้องสแกน</div></header>
-  <main>
-    <h1>🚚 ส่งออกพัสดุ (โรงเกลือ)</h1>
-    <p class="lead">เลือกขนส่ง 1 ครั้ง · สแกนหลายเลขแทรค · ส่งรายการกลับ KL Tracking</p>
-    <section class="steps"><div class="step">📦 <b>รับเข้า</b><small>โกดังต้นทาง</small></div><b class="arr">→</b><div class="step wait">◷ <b>รอจัดส่ง</b><small>ฝากโรงเกลือ</small></div><b class="arr">→</b><div class="step success">🚚 <b>สำเร็จ</b><small>ยืนยันใน KL Tracking</small></div></section>
-    <section class="panel"><h2><span class="num">1</span> เลือกบริษัทขนส่ง (รอบนี้)</h2><select id="carrier" aria-label="บริษัทขนส่ง" required><option value="">-- เลือกบริษัทขนส่ง --</option><option value="flash">⚡ Flash Express</option><option value="jnt">J&amp;T Express</option><option value="kex">KEX Express</option><option value="thaipost">ไปรษณีย์ไทย</option><option value="other">ขนส่งอื่น ๆ</option></select></section>
-    <section class="panel"><h2><span class="num">2</span> สแกนหรือพิมพ์เลขแทรค</h2><div class="entry"><button id="start" class="blue">▣ เปิดกล้องสแกน</button><form id="manual"><input id="track" autocomplete="off" spellcheck="false" autocapitalize="characters" placeholder="พิมพ์เลขแทรค" aria-label="เลขแทรค"><button class="blue" type="submit">＋ เพิ่ม</button></form></div><div id="cameraArea" hidden><div id="reader" aria-label="ภาพกล้องสแกนบาร์โค้ด"></div><button id="stop" class="light">ปิดกล้อง</button></div><p class="hint">อนุญาตใช้กล้องเมื่อเบราว์เซอร์ถาม · ถ้ากล้องอ่านไม่ได้ให้พิมพ์เลขแทรค</p></section>
-    <section class="meta"><div>🚚 รอบสแกน : <strong id="round"></strong></div><div>▦ วันที่ : <strong id="date"></strong></div></section>
-    <section class="panel"><div class="table-head"><h2>📦 รายการที่สแกน (รอบนี้)</h2><span class="count" id="count">ทั้งหมด 0 บิล</span></div><div class="scroll"><table><thead><tr><th>#</th><th>เลขแทรค</th><th>สถานะในหน้านี้</th><th>ลบ</th></tr></thead><tbody id="rows"><tr><td colspan="4" class="empty">ยังไม่มีเลขแทรค</td></tr></tbody></table></div><p class="hint">สถานะในหน้านี้หมายถึง “รับเลขจากกล้องแล้ว” ยังไม่ได้ตรวจหรือบันทึกใน Master</p></section>
-    <section class="bottom"><div class="ready" id="ready">○ สแกนรายการก่อนส่งไป KL Tracking</div><div class="countbox">📦 จำนวน : <b id="total">0</b> บิล</div></section>
-    <section class="actions"><button id="clear" class="light">⟳ ล้างรายการ</button><button id="send" class="green" disabled>⇧ ส่งรายการไป KL Tracking (0 บิล)</button></section>
-    <p id="message" class="message" role="status" aria-live="polite"></p>
-    <section class="note"><b>ความปลอดภัยของข้อมูล</b><p>หน้านี้ใช้สำหรับสแกนและเตรียมเลขแทรคเท่านั้น ไม่เชื่อม Google Sheets และไม่บันทึกสถานะ “สำเร็จ” ต้องกลับไปตรวจสอบและยืนยันส่งออกใน KL Tracking ด้วยบัญชีโรงเกลือ</p><button id="copy" class="outline">คัดลอกเลขแทรคทั้งหมด (ใช้เมื่อส่งกลับไม่ได้)</button><textarea id="copyFallback" hidden readonly aria-label="เลือกคัดลอกเลขแทรค" style="width:100%;min-height:100px;margin-top:8px"></textarea></section>
-  </main>
-</body>
-</html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#082c60"><meta name="referrer" content="no-referrer"><title>Barcode Camera Scanner</title><link rel="stylesheet" href="style.css"><script defer src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script><script defer src="scanner.js"></script></head>
+<body><main class="shell"><header><span class="logo">▣</span><div><h1>กล้องสแกนบาร์โค้ด</h1><p>กล้องสด · สแกนต่อเนื่อง · ไม่บันทึกข้อมูลบริษัท</p></div></header><section class="camera"><div id="reader" aria-label="ภาพกล้องสด"></div><div id="placeholder">กด “เปิดกล้องสด” เพื่อเริ่มสแกน</div></section><div class="buttons"><button id="start" type="button">▣ เปิดกล้องสด</button><button id="stop" type="button" disabled>ปิดกล้อง</button></div><section class="result"><span>อ่านล่าสุด</span><strong id="latest">—</strong><small id="count">อ่านแล้ว 0 รายการในหน้านี้</small></section><div id="status" role="status" aria-live="polite">พร้อมเปิดกล้อง</div><p class="hint">หน้า Public นี้มีเฉพาะกล้องอ่านบาร์โค้ด ไม่แสดงขนส่งหรือข้อมูลพัสดุ และไม่เชื่อมต่อ Google Sheets หากเปิดจาก KL Tracking ที่ล็อกอินอยู่ เลขที่อ่านจะถูกส่งกลับหน้าโรงเกลือเพื่อตรวจสอบก่อนยืนยัน</p></main></body></html>
